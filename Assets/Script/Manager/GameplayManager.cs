@@ -18,10 +18,12 @@ public class GameplayManager : MonoBehaviour
     public TextMeshProUGUI textTimer;
     public TextMeshProUGUI textResult;
     public GameObject panelGameOver;
+    public GameObject pausePanel;
     int currentScore;
     int currentTimer;
     public int defaultTimer = 60;
     public bool ismainmenu = false;
+    public bool ispaused = false;
 
     private void Awake()
     {
@@ -35,6 +37,8 @@ public class GameplayManager : MonoBehaviour
         InvokeRepeating("SpawnManager", SpawnInterval, SpawnInterval);
         currentScore = 0;
         currentTimer = defaultTimer;
+        Time.timeScale = 1f;
+        ispaused = false;
 
         StartCoroutine(CountDownTimer());
     }
@@ -90,6 +94,21 @@ public class GameplayManager : MonoBehaviour
         GameOver();
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (ispaused)
+            {
+                Resume();
+            }
+            else
+            {
+                Pause();
+            }
+        }
+    }
+
     private void GameOver()
     {
         Debug.Log("Game Over");
@@ -97,6 +116,20 @@ public class GameplayManager : MonoBehaviour
         textResult.text = "Score : " + currentScore.ToString();
         SoundManager.instance.PlaySoundGameOver();
         panelGameOver.SetActive(true);
+    }
+
+    public void Pause()
+    {
+        ispaused = true;
+        pausePanel.SetActive(true);
+        Time.timeScale = 0f;
+    }
+
+    public void Resume()
+    {
+        ispaused = false;
+        pausePanel.SetActive(false);
+        Time.timeScale = 1f;
     }
 
     public void Retry()
